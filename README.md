@@ -12,9 +12,9 @@ What things you need to install the software and how to install them
 
 ```
 boost library
-qt5
+qt5 ( To build wire parser module )
 yosys 0.4 ( Open Synthesis Suite )
-node ( for electron GUI )
+Node JS ( for electron GUI )
 
 ```
 
@@ -62,9 +62,8 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Qt Creator](https://www.qt.io/download) - The web framework used
+* [Qt Creator](https://www.qt.io/download) - Qt Creator provides a cross-platform, complete integrated development environment (IDE) for application developers to create applications for multiple desktop
 * [Node JS](https://nodejs.org/) - Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.
-* [Atom](https://atom.io) - Used to generate RSS Feeds
 
 
 
