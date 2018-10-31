@@ -1,6 +1,6 @@
 # Psi 2.0
 
-A tool for build a debug infrasctu
+A tool for build a debug infrascture for CPU-FPGA intel accelerators
 
 ## Getting Started
 
