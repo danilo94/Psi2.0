@@ -58,10 +58,13 @@ make
 ```
 on /Psi1.0/build folder.
 
-
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+After build and install yosys and Psi1.0 you can simple run Psi2.0 using 
+```
+npm start
+```
+
 
 ## Built With
 
