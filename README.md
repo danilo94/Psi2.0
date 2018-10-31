@@ -20,41 +20,37 @@ Node JS ( for electron GUI )
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+Firstly you need to install yosys dependency, for this you need to install or compile the yosys included in this package. For this you will run the following commands on yosys-yosys-0.4 folder:
 
 ```
-until finished
+make clean
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+For clean the repository
 
 ```
-Give an example
+make
 ```
-
-### And coding style tests
-
-Explain what these tests test and why
+To compile yosys ( probably you will need to install the follow  Prerequisites:
 
 ```
-Give an example
+ clang, bison, flex, libreadline-dev, gawk, tcl-dev, libffi-dev, git, graphviz, xdot, pkg-config, python3
 ```
+
+To install these dependencies in ubuntu, you can run the follow command
+```
+sudo apt-get install build-essential clang bison flex \
+	libreadline-dev gawk tcl-dev libffi-dev git \
+	graphviz xdot pkg-config python3
+```
+
+Finally after compile, you will run the following comand to install yosys in your system.
+
+```
+make install
+```
+
 
 ## Deployment
 
