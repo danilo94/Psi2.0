@@ -1,0 +1,1389 @@
+#include "mainwindow.h"
+#include "opening_window.h"
+#include <QCheckBox>
+#include <iterator>
+#include <sstream>
+#include <QtCore/QCoreApplication>
+#include <algorithm>
+#include<treeitem.h>
+#include<tree_item_module.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <inputform.h>
+//#include <boost/filesystem.hpp>
+
+
+//#include </usr/include/boost/algorithm/string/string.hpp>
+
+#include <QFile>
+#include <sstream>
+using std::ifstream;
+#include <string>
+using std::string;
+#include <vector>
+using std::vector;
+#include <iterator>
+using std::istream_iterator;
+#include <fstream>
+#include <iostream>
+#include <QGridLayout>
+#include <QFormLayout>
+using namespace std;
+
+MainWindow::MainWindow(QWidget *parent, std::string a)
+    : QMainWindow(parent)
+{
+    FOLDER_BASE = a;
+    vector<string> wires;
+    string wire ("wireteste");
+    wires.push_back(wire);
+    //copy_from_to("/home/andre/Documentos/CLearning/simpletest_top.v","aaa",3,wires); //sempre linha-1
+    //Tree
+    treeView = new QTreeView(this);
+    //setCentralWidget(treeView);
+    standardModel = new QStandardItemModel ;
+
+    QList<QStandardItem *> preparedRow =prepareRow("type", "name", "size","ID");
+    QStandardItem *item = standardModel->invisibleRootItem();
+    // adding a row to the invisible root item produces a root element
+    item->appendRow(preparedRow);
+
+    QFile file("/home/andre/Documentos/yosys-new/yosys/manual/test/Hierarchy.txt");
+    file.open(QIODevice::ReadOnly);
+    QString data = file.readAll();
+    int tam_b = data.size();
+    file.close();
+    QModelIndex auxxx = preparedRow.first()->index();
+
+    global_index = auxxx;
+    setupModelData(data.split(QString("\n")),preparedRow.first());
+
+    treeView->setModel(standardModel);
+    //treeView->expandAll();
+
+    //selection changes shall trigger a slot
+    QItemSelectionModel *selectionModel= treeView->selectionModel();
+    /*connect(selectionModel, SIGNAL(selectionChanged (const QItemSelection &, const QItemSelection &)),
+            this, SLOT(selectionChangedSlot(const QItemSelection &, const QItemSelection &)));*/
+    //connect(treeView, SIGNAL(tree_crawler_test()),this, SLOT(selectionChangedSlot(const QItemSelection &, const QItemSelection &)));
+    //----------------------------------------------------------------------
+    //Components initializations.
+
+  //  m_button = new QPushButton("Network Instance", this);
+    get_wires = new QPushButton("Get Wires", this);
+    toplevel = new QTextEdit(this);
+    textb = new QTextBrowser(this);
+    label_toplevel = new QLabel("TopLevel Module",this);
+    listWidget = new QListWidget(this);
+    m_centralWidget = new QWidget();
+    treeWidget = new QTreeWidget(m_centralWidget);
+    verilog_path = new QTextEdit(this);
+    input_form = new InputForm(this);
+    scroll_area = new QScrollArea(this);
+
+   // verilog_path->setText("/home/andre/Documentos/CLearning");
+    label_verilog_path = new QLabel("Verilog file path:",this);
+    //myvector = NULL;
+    //--------------------------------------------------------------
+
+
+    //Components geometry settings.
+    label_verilog_path->setGeometry(QRect(QPoint(330, 25),QSize(200, 25)));
+    verilog_path->setGeometry(QRect(QPoint(450, 25),QSize(200, 25)));
+    label_toplevel->setGeometry(QRect(QPoint(330, 0),QSize(200, 25)));
+    toplevel->setGeometry(QRect(QPoint(450, 0),QSize(200, 25)));
+    textb->setGeometry(QRect(QPoint(500,50),QSize(500,500)));
+    //m_button->setGeometry(QRect(QPoint(450, 550),QSize(200, 50)));
+    get_wires->setGeometry(QRect(QPoint(450, 550),QSize(100, 50)));
+    //listWidget->setGeometry(QRect(QPoint(0,50),QSize(500,500)));
+    treeView->setGeometry(QRect(QPoint(0,50),QSize(500,500)));
+    scroll_area->setGeometry(QRect(QPoint(500,50),QSize(500,500)));
+    scroll_area->setWidget(input_form);
+
+
+
+
+    this->resize(1000,600);
+
+    //--------------------------------------------------------------
+
+    //connect(m_button, SIGNAL(released()), this, SLOT(tree_crawler()));
+    connect(get_wires,SIGNAL(released()), this, SLOT(handleButton2()));
+    //tree_crawler();
+}
+
+
+void MainWindow::selectionChangedSlot(const QItemSelection & /*newSelection*/, const QItemSelection & /*oldSelection*/)
+{
+    //get the text of the selected item
+    QModelIndex rootindex = treeView->rootIndex();
+
+
+    QModelIndex index_aux = treeView->selectionModel()->currentIndex();
+
+    //const QModelIndex index = global_index.child(index_aux.row(),0);
+    const QModelIndex index = index_aux.parent().child(index_aux.row(),0);
+    const QModelIndex index3 = index_aux.parent().child(index_aux.row(),2);
+
+
+    const QModelIndex indexaux = index_aux.parent().child(index_aux.row(),1);
+    const QModelIndex ID_ITEM = index_aux.parent().child(index_aux.row(),3);
+    int index_row = index_aux.row();
+    int index_column = index_aux.column();
+
+
+
+
+
+    QString row = QString::number(index.row());
+    QString column = QString::number(index.column());
+    QModelIndex index2;
+    if(index.child(0,0).isValid()){
+        index2 = index.child(0,0);
+    }else{
+        index2 = index;
+    }
+
+
+    //qDebug("row "+row.toLatin1()+"column "+column.toLatin1());
+    //    QModelIndex index2 = new QModelIndex(index.row(),0);
+    QString selectedText = index.data(Qt::DisplayRole).toString();
+    QString selectedText2 = indexaux.data(Qt::DisplayRole).toString();
+    QString current_id = ID_ITEM.data(Qt::DisplayRole).toString();
+
+    QStandardItem* treee;
+    QStandardItem*treee2;
+    treee2 = static_cast<QStandardItem*> (index3.internalPointer());
+
+    treee = static_cast<QStandardItem*> (treeView->selectionModel()->currentIndex().internalPointer());
+    //std::cout << "checado" << treee->data(Qt::DisplayRole).toString().toStdString() << "\n";
+
+
+    std::string name_test = indexaux.data(Qt::DisplayRole).toString().toStdString();
+    QStandardItem *treeit =  treee->child(10);
+    QString wiresub("wiresub");
+    if(!selectedText.toStdString().compare(wiresub.toStdString())){
+
+    }else{
+        treeit =  treeit->child(4);
+        treeit =  treeit->child(0);
+        treeit =  treeit->child(0,1);
+
+        //treeit = treeit->child(10);
+        int aaa = treeit->row();
+        std::cout << "aaaa" <<treeit->data(Qt::DisplayRole).toString().toStdString() << "\n\n\n\n";
+        if(treee->checkState() == 2){
+            std::cout << "checado" << treee->data(Qt::DisplayRole).toString().toStdString() << "\n";
+        }
+        else{
+            std::cout << " nao checado  " << treee->data(Qt::DisplayRole).toString().toStdString() << "\n";
+        }
+
+
+    }
+    //find out the hierarchy level of the selected item
+    int hierarchyLevel=1;
+    QModelIndex seekRoot = index;
+    while(seekRoot.parent() != QModelIndex())
+    {
+        seekRoot = seekRoot.parent();
+        hierarchyLevel++;
+    }
+
+    QString showString = QString("%1, Level %2").arg(selectedText)
+            .arg(hierarchyLevel);
+    setWindowTitle(showString);
+
+    /*text_s = textb->toPlainText();
+    if(text_s.contains(selectedText2))
+    {
+        text_s.replace(selectedText2+",",QString(""));
+    }
+    else{
+        text_s = text_s+selectedText2;
+        text_s = text_s+",";
+        textb->setText(text_s);
+    }
+    textb->setText(text_s);*/
+
+}
+
+
+
+
+
+string MainWindow::copy_from_to(std::string file_name_from,std::string file_name_to,int line, vector<string> wires){
+
+    string file_copy_name = file_name_to;
+    // Store the words from the two files into these two vectors
+    //vector<string> lines_array;
+
+    // Create two input streams, opening the named files in the process.
+    // You only need to check for failure if you want to distinguish
+    // between "no file" and "empty file". In this example, the two
+    // situations are equivalent.
+    std::ofstream myfile;
+    myfile.open (file_name_to.c_str());
+    ifstream file_from(file_name_from.c_str());
+
+    std::string contents((std::istreambuf_iterator<char>(file_from)),
+                         std::istreambuf_iterator<char>());
+
+    //cout << contents.c_str();
+    char aaa = '\n';
+    vector<string> lines_array = split(contents,aaa);
+
+    //wires outputed
+    string comma (")");
+    int b = line-1;
+    while(1){
+        try {
+            // use ".at()" and catch the resulting exception if there is any
+            // chance that the index is bogus. Since we are reading external files,
+            // there is every chance that the index is bogus.
+            std::string::size_type pos = lines_array.at(b).find(")");
+            if(pos != std::string::npos)
+            {
+                string assigns;
+                char dotcomma = ')';
+                vector<string> line_endm = split(lines_array.at(b),dotcomma);
+                for (int var = 0; var < wires.size(); ++var) {
+                    line_endm.at(0) = line_endm[0] + std::string(", output wire ") + wires[var] +"_out";
+                    assigns = assigns + string("assign ") + wires[var] +"_out" + " = " + wires[var] + ";" +"\n";
+                   // assigns = assigns + "assign do["+var+ string ("]") + " = " + wires[var] + ";"+ "\n";
+                    QString fio (wires[var].c_str());
+                }
+                std::cout << "teste aquiii" << line_endm.at(0) << "\n\n\n";
+
+                if(line_endm.size() == 2){
+                    lines_array[b] = line_endm[0] + std::string(")") + line_endm[1];
+                }
+                if(line_endm.size() == 1){
+                    lines_array[b] = line_endm[0] + std::string(")");
+                }
+                lines_array.insert(lines_array.begin()+b+1,assigns);
+                break;
+            }
+
+
+        } catch(...) {
+            cout << "Data Unavailable\n";
+        }
+        b++;
+    }
+
+
+
+
+
+    int i = line;
+    while(1){
+        try {
+            // use ".at()" and catch the resulting exception if there is any
+            // chance that the index is bogus. Since we are reading external files,
+            // there is every chance that the index is bogus.
+            std::string::size_type pos = lines_array.at(i).find("endmodule");
+            if(pos != std::string::npos)
+            {
+                myfile << lines_array.at(i).c_str();
+                //myfile << "\n";
+                cout<<lines_array.at(i)<<"\n";
+                break;
+            }
+            else
+            {
+                myfile << lines_array.at(i).c_str();
+                myfile << "\n";
+                cout<<lines_array.at(i)<<"\n";
+            }
+
+
+        } catch(...) {
+            // deal with error here. Maybe:
+            //   the input file doesn't exist
+            //   the ifstream creation failed for some other reason
+            //   the string reads didn't work
+            cout << "Data Unavailable\n";
+        }
+        i++;
+    }
+    return file_copy_name;
+}
+
+std::vector<std::string> MainWindow::split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+void MainWindow::handleButton2()
+{
+    string comando;
+    input_form->accept(comando);
+    QString c (comando.c_str());
+    string comandos[input_form->redes.size()];
+
+    for (int i=0; i<input_form->redes.size(); i++){
+        for (int k=0;k;){
+            comandos[i][k];
+        }
+
+    }
+
+    tree_crawler2();
+    /* char *command = new char[500] ;
+    std::string comando = "yosys -p 'select -list w:[!$]*' "+verilog_path->toPlainText().toStdString()+"/"
+            +toplevel->toPlainText().toStdString()+".v > "+verilog_path->toPlainText().toStdString()+"/"+"wires.txt 2>&1";
+    strcpy(command,comando.c_str());
+    exec(command);
+    //textb->setText(command);
+    myvector = ReadCells(toplevel->toPlainText(),verilog_path->toPlainText());
+
+    QListWidgetItem *item;
+    std::string aux;
+    for (int i = 0; i < myvector.size(); ++i) {
+        item = new QListWidgetItem();
+        aux = myvector[i];
+        item->setText(QString::fromStdString(aux));
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        item->setCheckState(Qt::Unchecked);
+        listWidget->addItem(item);
+    }*/
+}
+
+
+
+void MainWindow::handleButton()
+{
+
+
+    QWidget *item2;
+    // change the text
+    //m_button->setText("Example");
+    // resize button
+    int a = listWidget->count();
+    QString text;
+    text = "module generic(";
+    for (int i = 0; i < a; ++i) {
+        // listWidget->itemWidget(listWidget->item(i))->;
+        if(listWidget->item(i)->checkState()){
+            text = text+listWidget->item(i)->text();
+            text = text+",";
+        }
+        else{
+
+        }
+
+
+    }
+    int testando = text.size();
+    //std::string s = std::to_string(testando);
+    text.remove(text.size()-1,1);
+    text = text+");";
+
+
+    textb->setText(text);
+
+}
+
+std::vector<std::string> MainWindow::ReadCells(QString toplevel,QString path)
+{
+    using namespace std;
+    std::vector<std::string> myvector;
+    std::vector<std::string> myvector2;
+    std::string aux = path.toStdString()+"/cells.txt";
+    std::ifstream file(aux.c_str()); // pass file name as argment
+    std::string linebuffer;
+    std::string delimiter = "|";
+    int i = 0;
+    while (file && getline(file, linebuffer)){
+
+        if (linebuffer.length() == 0)continue;
+
+        if(linebuffer.find("toplevel")==false){
+
+            size_t pos = 0;
+            std::string token;
+            while ((pos = linebuffer.find(delimiter)) != std::string::npos) {
+                token = linebuffer.substr(0, pos);
+                //std::cout << token << std::endl;
+                myvector.push_back(token);
+                linebuffer.erase(0, pos + delimiter.length());
+            }
+            myvector2.push_back(linebuffer);
+
+
+        }
+
+    }
+
+    return myvector2;
+}
+
+std::vector<std::string> MainWindow::ReadWires(QString toplevel,QString path)
+{
+    std::vector<std::string> myvector;
+    std::string aux = path.toStdString()+"/wires.txt";
+    std::ifstream file(aux.c_str()); // pass file name as argment
+    std::string linebuffer;
+    std::string delimiter = "|";
+    int i = 0;
+    while (file && getline(file, linebuffer)){
+
+        if (linebuffer.length() == 0)continue;
+
+        if(linebuffer.find("toplevel")==false){
+            size_t pos = 0;
+            std::string token;
+            while ((pos = linebuffer.find(delimiter)) != std::string::npos) {
+                token = linebuffer.substr(0, pos);
+                //std::cout << token << std::endl;
+
+                linebuffer.erase(0, pos + delimiter.length());
+            }
+
+            myvector.push_back(linebuffer);
+
+        }
+
+    }
+
+    return myvector;
+}
+
+std::string MainWindow::exec(char* cmd) {
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) return "ERROR";
+    char buffer[10000];
+    std::string result = "";
+    while(!feof(pipe)) {
+        if(fgets(buffer, 10000, pipe) != NULL)
+            result += buffer;
+    }
+    pclose(pipe);
+    return result;
+}
+
+
+/*void MainWindow::tree_crawler_test()
+{
+    std::cout << "\n ######################################################################### \n ############################# \n";
+    QModelIndex rootindex = global_index;
+
+    QModelIndex index_root_design1 = rootindex.child(0,0);
+    index_root_design1 = index_root_design1.child(0,0);
+    QModelIndex index_root_design2 = rootindex.child(0,1);
+    QModelIndex index_root_design3 = rootindex.child(0,2);
+    QModelIndex index_root_design4 = rootindex.child(0,3);
+    std::cout << "Root Design: " << index_root_design1.data(Qt::DisplayRole).toString().toStdString() << "\n";
+    std::cout << "Root Design: " << index_root_design2.data(Qt::DisplayRole).toString().toStdString() << "\n";
+    std::cout << "Root Design: " << index_root_design3.data(Qt::DisplayRole).toString().toStdString() << "\n";
+    std::cout << "Root Design: " << index_root_design4.data(Qt::DisplayRole).toString().toStdString() << "\n";
+
+    treeitem *root_design_item = items_tree.at(0);
+
+    std::cout << "Type: " << root_design_item->gettype() << "\n";
+    std::cout << "ID: " << root_design_item->getID() << "\n";
+    std::cout << "Father: " << root_design_item->getfather() << "\n";
+
+    int wires_origin = 90;
+    vector<std::string> wires;
+    wires.push_back("a");
+    wires.push_back("y");
+    treeitem *item_origin = items_tree.at(wires_origin);
+    string file_origin = item_origin->getfile();
+    vector<std::string> file_split = split(file_origin,':');
+    string file_name = file_split[0];
+    string file_line = file_split[1];
+    std::cout << "Name : " << file_name << " Line: " << file_line << "\n";
+    copy_from_to("/home/andre/Documentos/yosys-new/yosys/manual/test/"+file_name,"/home/andre/Documentos/yosys-new/yosys/manual/test/"+file_name+"_2",std::atoi(file_line.c_str()),wires);
+
+
+
+}*/
+
+void MainWindow::tree_crawler_test()
+{
+
+    vector<std::string> wires;
+    wires.push_back("a");
+    wires.push_back("y");
+    copy_from_to("/home/andre/Documentos/yosys-new/yosys/manual/test/absval_ref.v","/home/andre/Documentos/yosys-new/yosys/manual/test/absal_ref2.v",1,wires);
+
+
+
+}
+
+
+
+void MainWindow::tree_crawler2(){
+
+    QModelIndex rootindex = global_index;
+    QModelIndex current_index;
+    QModelIndex top_index;
+    QModelIndex current_index_compare;
+    QList<QModelIndex> index_stack;
+    QList<QModelIndex*> wires_stack;
+    QList<int> child_positions;
+    std::string wire = "wire";
+    QStandardItem *top_item;
+    tree_item_module* current_module;
+
+
+
+    top_item = static_cast<QStandardItem*> (rootindex.child(0,0).child(0,0).internalPointer());
+    std::string location_top = top_item->accessibleDescription().toStdString();
+    std::string name_item_top = rootindex.child(0,1).data(Qt::DisplayRole).toString().toStdString();
+    std::string type_item_top = rootindex.child(0,0).data(Qt::DisplayRole).toString().toStdString();
+    tree_item_module* top_item_module = new tree_item_module(name_item_top,type_item_top,location_top);
+
+
+    if(rootindex.child(0,0).isValid()){
+        current_index = rootindex.child(0,0);
+        current_module = top_item_module;
+        top_index = current_index;
+
+        //guarda root
+
+    }
+    int i = 0;
+    while(1){
+        if(current_index.child(i,0).isValid()){
+            current_index_compare = current_index.child(i,0);
+            std::string type_item = current_index_compare.parent().child(i,0).data(Qt::DisplayRole).toString().toStdString();
+            std::string name_item = current_index_compare.parent().child(i,1).data(Qt::DisplayRole).toString().toStdString();
+            int id_item = std::atoi(current_index_compare.parent().child(i,3).data(Qt::DisplayRole).toString().toStdString().c_str());
+            int item_size = std::atoi(current_index_compare.parent().child(i,2).data(Qt::DisplayRole).toString().toStdString().c_str());
+
+
+            // TRATAMENTO WIRE INICIO
+            if(wire.compare(type_item) == 0){
+
+                index_stack << current_index;
+                child_positions << i;
+                current_index = current_index.child(i,0);
+                QStandardItem *subwire_item;
+                std::string name_subwire;
+                QModelIndex subwire;
+                for (i = 0; i < item_size; i++) {
+                    subwire = current_index.child(i,0);
+                    subwire = subwire.child(0,0);
+                    name_subwire = current_index.child(i,1).data(Qt::DisplayRole).toString().toStdString();
+                    subwire_item = static_cast<QStandardItem*> (subwire.internalPointer());
+                    std::string location = subwire_item->accessibleDescription().toStdString();
+
+                    if(subwire_item->checkState() == 2){
+                        items_tree.at(id_item)->push_selected_wire(name_subwire);
+                        current_module->appendWirePrivate(name_subwire+"*"+"%"+"*"+location+"*"+"%");
+
+                        std::cout << "subs: " << name_subwire << "\n";
+                        recursive_module_searching(current_module,top_item_module,name_subwire);
+
+
+                    }
+                }
+
+                current_index = index_stack.last();
+                index_stack.pop_back();
+                i = child_positions.last()+1;
+                child_positions.pop_back();
+            }
+            // TRATAMENTO WIRE FIM
+            //CASO SEJA UM MODULO, TEM QUE COLOCAR ELE COMO TOP DOS INDEX
+            else{
+                QStandardItem *current_item;
+                current_item = static_cast<QStandardItem*> (current_index_compare.parent().child(i,0).child(0,0).internalPointer());
+                std::string location_current = current_item->accessibleDescription().toStdString();
+                tree_item_module *new_module = new tree_item_module(name_item,type_item,location_current,current_module);
+                current_module->appendChild(new_module);
+                current_module = new_module;
+
+                index_stack << current_index;
+                child_positions << i;
+                current_index = current_index.child(i,0);
+                i = 0;
+            }
+
+
+        }else{
+            if(index_stack.size() == 0){
+                break;
+            }
+
+            current_index = index_stack.last();
+            std::string type_item2 = current_index_compare.parent().child(i,0).data(Qt::DisplayRole).toString().toStdString();
+            std::string name_item2 = current_index_compare.parent().child(i,1).data(Qt::DisplayRole).toString().toStdString();
+            int id_item2 = std::atoi(current_index_compare.parent().child(i,3).data(Qt::DisplayRole).toString().toStdString().c_str());
+            int item_size2 = std::atoi(current_index_compare.parent().child(i,2).data(Qt::DisplayRole).toString().toStdString().c_str());
+
+            index_stack.pop_back();
+            current_module = current_module->parentItem();
+
+            i = child_positions.last()+1;
+            child_positions.pop_back();
+        }
+    }
+
+    destiny_folder_global = create_folder(FOLDER_BASE);
+    char *command = new char[10000];
+    std::string comando = "cp -a ";
+
+
+
+    //destiny_folder_global = "/home/andre/Documentos/yosys-new/yosys/manual/test/modified_0";
+
+    depth_searching(top_item_module);
+
+
+    std::string includes = "";
+    for (int var = 0; var < NewFiles.size(); ++var) {
+        includes = includes +"\`include \""+NewFiles[var]+"\"\n";
+    }
+    command = new char[10000];
+    std::string acent = "`";
+    std::string acent2 = "\\`";
+    replaceAll(includes,acent,acent2);
+    acent = "\"";
+    acent2 = "\\\"";
+    replaceAll(includes,acent,acent2);
+    comando = "echo \""+includes+"\\n$(cat "+top_file+")"+"\" > "+top_file;
+    strcpy(command,comando.c_str());
+    exec(command);
+
+
+    std::string print_show = "";
+    print_show = print_show + "Created files on "+destiny_folder_global+"\n";
+
+    for (int i = 0; i < NewFiles.size(); ++i) {
+        print_show = print_show+"\n"+NewFiles[i].c_str()+".v";
+    }
+    QString print_Q = QString::fromStdString(print_show);
+    textb->setText(print_Q);
+
+
+    std::cout <<"fim";
+
+    char *command2 = new char[10000];
+    std::string BASE_AUX = FOLDER_BASE;
+    std::string comando2 = "cp -a "+BASE_AUX+"/*.v "+destiny_folder_global+"/";
+    strcpy(command2,comando2.c_str());
+    exec(command2);
+
+}
+
+std::string MainWindow::create_folder (std::string base_folder){
+    char *command = new char[500];
+    int i = 0;
+    std::string destiny_folder = base_folder+"/modified_"+boost::lexical_cast<std::string>(i);
+    while(check_folder_existence(destiny_folder)){
+        i++;
+        destiny_folder = base_folder+"/modified_"+boost::lexical_cast<std::string>(i);
+
+    }
+    if(i > 0){
+        destiny_folder = base_folder+"/modified_"+boost::lexical_cast<std::string>(i);
+        //boost::filesystem::create_directory(destiny_folder.c_str());
+        std::string comando = "mkdir "+destiny_folder;
+        strcpy(command,comando.c_str());
+
+
+
+
+        exec(command);
+
+
+        return destiny_folder;
+
+    }else{
+        //boost::filesystem::create_directory(destiny_folder.c_str());
+        destiny_folder = base_folder+"/modified_0";
+        std::string comando = "mkdir "+destiny_folder;
+        strcpy(command,comando.c_str());
+        exec(command);
+
+
+        return destiny_folder;
+    }
+
+
+
+}
+
+
+
+bool MainWindow::check_folder_existence (std::string folder){
+    struct stat info;
+
+    if( stat( folder.c_str(), &info ) != 0 ){
+        printf( "cannot access %s\n", folder.c_str() );
+        return false;
+    }
+    else if( info.st_mode & S_IFDIR ){  // S_ISDIR() doesn't exist on my windows
+        printf( "existe", folder.c_str() );
+        return true;
+    }
+    else{
+        printf( "Nao existe", folder.c_str() );
+        return false;
+    }
+
+}
+
+void MainWindow::depth_searching (tree_item_module* top_item_module){
+    bool top = false;
+//    cout << "NAME\nNAME\nNAME\nNAME\n" << top_item_module->getName() << "\n";
+    QList<std::string> wPrivates = top_item_module->getPrivateWires();
+    QList<std::string> wPublics = top_item_module->getPublicWires();
+
+//    cout << "private:" << "\n";
+
+    /*
+    for (int j = 0; j < wPrivates.size(); ++j) {
+        cout << wPrivates[j] << "\n";
+        QString aux_youtube(wPrivates[j].c_str());
+
+    }*/
+
+    //#############################MODIFYFILE###########################################################
+    if(wPrivates.size() > 0){
+        QString info_aux(wPrivates[0].c_str());
+        QStringList info_wire = info_aux.split("*", QString::SkipEmptyParts);
+        QStringList file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+        std::ofstream myfile;      
+        std::string file = "";
+
+        std::size_t found = file_line.at(0).toStdString().find(FOLDER_BASE);
+        if (found!=std::string::npos){
+
+            top = true;
+            file =  file_line.at(0).toStdString();
+            //top_file = file;
+
+        }else{
+            file = FOLDER_BASE+"/"+file_line.at(0).toStdString();
+
+        }
+        vector<string> lines;
+        vector<string> module_copy;
+        vector<string> module_copy2;
+
+        int linecount = 0 ;
+        std::string line ;
+        std::ifstream infile(file.c_str());
+        if ( infile ) {
+            while ( getline( infile , line ) ) {
+                std::cout << linecount << ": " << line << '\n' ;//supposing '\n' to be line end
+                lines.push_back(line);
+                linecount++ ;
+            }
+        }
+
+        int extra_line_count = 0;
+
+        std::string endmodule("endmodule");
+        std::string module("module");
+        int line_copy_start = atoi(file_line[1].toStdString().c_str());
+        int line_module_start = 0;
+
+        for (int j = 0; j < lines.size(); j++) {
+            line = lines[j];
+            std::size_t found = line.find(module);
+            if (found!=std::string::npos){
+                break;
+
+            }else{
+                std::string acent = "`";
+                std::string acent2 = "\\`";
+                replace(line,acent,acent2);
+                acent = "\"";
+                acent2 = "\\\"";
+                replaceAll(line,acent,acent2);
+
+                module_copy2.push_back(line);
+                char *command = new char[1000];
+                strcpy(command,line.c_str());
+                std::cout << ";";
+
+            }
+        }
+
+        for (int j = line_copy_start-1; j >= 0; --j) {
+            line = lines[j];
+            std::size_t found = line.find(module);
+            if (found!=std::string::npos){
+                //module_copy.push_back(line);
+                line_module_start = j;
+                break;
+
+            }else{
+                //module_copy.push_back(line);
+
+            }
+        }
+
+        for (int j = line_module_start; j < lines.size(); ++j) {
+            line = lines[j];
+            std::size_t found = line.find(endmodule);
+            if (found!=std::string::npos){
+                module_copy.push_back(line);
+                break;
+
+            }else{
+                module_copy.push_back(line);
+
+            }
+        }
+        std::string type = top_item_module->getType();
+        for (int k = 0; k < module_copy.size(); k++) {
+            line = module_copy[k];
+            std::size_t found = line.find(type);
+            if (found!=std::string::npos){
+                replace(module_copy[k],type,top_item_module->getName()+"_2");
+                cout << "a";
+
+
+                break;
+
+            }else{
+                //                 module_copy.push_back(line);
+
+            }
+        }
+
+        for (int k = 0; k < module_copy.size(); k++) {
+            line = module_copy[k];
+            std::size_t found = line.find(';');
+            if (found!=std::string::npos){
+                std::string end = ");";
+                std::string out_assign = "";
+                for (int h = 0; h < wPrivates.size(); ++h) {
+                    info_aux = wPrivates[h].c_str();
+                    info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                    file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+                    std::string string_aux = info_wire[0].toStdString();
+                    boost::erase_all(string_aux,"[");
+                    boost::erase_all(string_aux,"]");
+                    out_assign = out_assign + ", output "+string_aux+"_out";
+                }
+
+                if(wPublics.size() > 0){
+                    for (int i = 0; i < wPublics.size(); i++) {
+                        QString aux_public(wPublics[i].c_str());
+                        info_aux = wPublics[i].c_str();
+                        info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                        std::string string_aux = info_wire[0].toStdString();
+                        boost::erase_all(string_aux,"[");
+                        boost::erase_all(string_aux,"]");
+                        out_assign = out_assign + ", output "+string_aux+"_out";
+
+                    }
+                    out_assign  = out_assign +");\\n";
+                    for (int h = 0; h < wPrivates.size(); ++h) {
+                        info_aux = wPrivates[h].c_str();
+                        info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                        file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+                        std::string string_aux = info_wire[0].toStdString();
+                        boost::erase_all(string_aux,"[");
+                        boost::erase_all(string_aux,"]");
+                        out_assign  = out_assign + " assign "+string_aux+"_out = "+info_wire[0].toStdString()+";"+"\\n";
+                    }
+
+                    for (int h = 0; h < wPublics.size(); ++h) {
+                        info_aux = wPublics[h].c_str();
+                        info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                        std::string string_aux = info_wire[0].toStdString();
+                        boost::erase_all(string_aux,"[");
+                        boost::erase_all(string_aux,"]");
+                        std::string string_aux2 = info_wire[1].toStdString();
+                        boost::erase_all(string_aux2,"[");
+                        boost::erase_all(string_aux2,"]");
+                        out_assign  = out_assign + " assign "+string_aux+"_out = "+string_aux2+"_out;"+"\\n";
+                    }
+
+                    for (int h = 0; h < wPublics.size(); ++h) {
+                        info_aux = wPublics[h].c_str();
+                        info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                        file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+                        QStringList old_new_type = info_wire.at(3).split(":",QString::SkipEmptyParts);
+                        int line_replace = std::atoi(file_line[1].toStdString().c_str()) - line_module_start -1;
+                        replace(module_copy[line_replace],old_new_type[0].toStdString(),old_new_type[1].toStdString()+"_2");
+                        std::string string_aux = info_wire[1].toStdString();
+                        boost::erase_all(string_aux,"[");
+                        boost::erase_all(string_aux,"]");
+                        replace(module_copy[line_replace],");",","+string_aux+"_out);");
+                        //line_copy_start
+                        cout << "a";
+                    }
+
+                    replace(module_copy[k],end,out_assign);
+
+                    /*for (int h = 0; h < wPublics.size(); ++h) {
+                      info_aux = wPublics[h].c_str();
+                      info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                      file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+                      int alter_line =
+                      out_assign  = out_assign + " assign "+info_wire[0].toStdString()+"_out = "+info_wire[1].toStdString()+"_out;"+"\\n";
+                  }
+                   cout << "a";*/
+                    break;
+                }else{
+                    stringstream ss;
+                    ss << wPrivates.size();
+
+// É aqui que ele cria a string pra ser escrita no arquivo :D
+                    out_assign  = out_assign + ");\\n\n"+ " //--Generated Code--//\n\n";
+                    out_assign = out_assign+ "wire di["+ss.str()+"-1:0];\n";
+                    ss.str("");
+                    for (int h = 0; h < wPrivates.size(); ++h) {
+                        info_aux = wPrivates[h].c_str();
+                        info_wire = info_aux.split("*", QString::SkipEmptyParts);
+                        file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+                        std::string string_aux = info_wire[0].toStdString();
+                        boost::erase_all(string_aux,"[");
+                        boost::erase_all(string_aux,"]");
+                        ss<< h;
+                        out_assign = out_assign + "assign di["+ss.str()+"] = " +info_wire[0].toStdString()+";\\n";
+                        QString oi (info_wire[0].toStdString().c_str());
+                        out_assign  = out_assign + " assign "+string_aux+"_out = "+info_wire[0].toStdString()+";"+"\\n";
+                        ss.str("");
+                    }
+                    ss.str("");
+                    ss << wPrivates.size();
+                    out_assign = out_assign+ "output do["+ss.str()+":0];\n";
+                    out_assign = out_assign+ "//--End of The Generated Code--//\n";
+                    replace(module_copy[k],end,out_assign);
+
+                    break;
+                }
+            }
+        }
+        QStringList file_aux = file_line[0].split(".", QString::SkipEmptyParts);
+        char *command = new char[500] ;
+        std::string comando ="";
+        std::string new_file = "";
+        if(top){
+            char aaa = '/';
+            vector<string> destiny_array = split(file_aux[0].toStdString(),aaa);
+            comando = "touch "+destiny_folder_global+"/"+destiny_array[destiny_array.size()-1]+"_2"+".v";
+            top_file = destiny_folder_global+"/"+destiny_array[destiny_array.size()-1]+"_2"+".v";
+            new_file = destiny_folder_global+"/"+destiny_array[destiny_array.size()-1]+"_2"+".v";
+        }else{
+            comando = "touch "+destiny_folder_global+"/"+file_aux[0].toStdString()+"_2"+".v";
+            new_file = destiny_folder_global+"/"+file_aux[0].toStdString()+"_2"+".v";
+        }
+        if(top){
+            top = false;
+        }else{
+            bool exist = false;
+            for (int j = 0; j < NewFiles.size(); ++j) {
+                std::string file_aux = NewFiles[j];
+                if(file_aux.compare(new_file) == 0){
+                    exist = true;
+                }
+            }
+            if(exist == false){
+                NewFiles << new_file;
+            }
+        }
+
+        strcpy(command,comando.c_str());
+        exec(command);
+
+
+
+        for (int l = 0; l < module_copy2.size(); ++l) {
+            comando = "printf \""+module_copy2[l]+"\\n\""+" >> "+new_file;
+            strcpy(command,comando.c_str());
+            exec(command);
+            std::string h =  module_copy2[l];
+             strcpy(command,h.c_str());
+            cout << "b";
+        }
+        // Mudança na forma de escrita em arquivo
+        FILE *arquivo = fopen(new_file.c_str(),"a+");
+        for (int l = 0; l < module_copy.size(); ++l) {
+            string write = module_copy[l];
+            fprintf (arquivo,"%s\n",write.c_str());
+        }
+        /*
+        string outtput;
+        std::stringstream val;
+        string auxx;
+        string parsing;
+        for (int i=0; i<wPrivates.size();i++){
+            val<<i;
+            auxx = val.str();
+            parsing = wPrivates[i].c_str();
+
+            for (int j=0; j<parsing.size(); j++){
+                if (parsing[j] == '*'){
+                    if (parsing[j+1] == '%' && parsing[j+2]== '*'){
+                        parsing.erase(j,parsing.size());
+                        break;
+                    }
+                }
+            }
+
+            auxx.erase(0,i);
+            outtput = outtput+" assign di["+auxx+"]"+"="+parsing+";\n";
+
+        }
+
+       // fprintf (arquivo,"%s",outtput.c_str());
+        */
+
+
+        fclose(arquivo);
+
+
+
+        infile.close( ) ;
+    }
+
+    //#############################MODIFYFILE###########################################################
+
+
+    cout << "puvblic:" << "\n";
+    for (int j = 0; j < wPublics.size(); ++j) {
+        cout << wPublics[j] << "\n";
+    }
+    cout << "\n\n\n";
+
+    tree_item_module* current_module;
+    if(top_item_module->childCount() > 0){
+        for (int i = 0; i < top_item_module->childCount(); ++i) {
+            depth_searching(top_item_module->child(i));
+        }
+    }else{
+        return;
+    }
+
+}
+
+void MainWindow::replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
+bool MainWindow::replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+/* std::string MainWindow::modify_private (QList<std::string> wPrivates){
+   for (int j = 0; j < wPrivates.size(); ++j) {
+        QString info_aux(wPrivates[j].c_str());
+        QStringList info_wire = info_aux.split("*", QString::SkipEmptyParts);
+        QStringList file_line = info_wire.at(2).split(":",QString::SkipEmptyParts);
+        std::ofstream myfile;
+        std::string file = FOLDER_BASE+"/"+file_line.at(0).toStdString();
+         vector<string> lines;
+         vector<string> module_copy;
+
+
+        int linecount = 0 ;
+        std::string line ;
+        std::ifstream infile(file.c_str());
+        if ( infile ) {
+           while ( getline( infile , line ) ) {
+          std::cout << linecount << ": " << line << '\n' ;//supposing '\n' to be line end
+          lines.push_back(line);
+          linecount++ ;
+           }
+        }
+
+        int extra_line_count = 0;
+
+        std::string endmodule("endmodule");
+        int line_copy_start = atoi(file_line[1].toStdString().c_str());
+
+        for (int j = line_copy_start-1; j < lines.size(); ++j) {
+            line = lines[j];
+            std::size_t found = line.find(endmodule);
+              if (found!=std::string::npos){
+                  module_copy.push_back(line);
+                std::cout << "first 'needle' found at: " << found << '\n';
+                  break;
+
+              }else{
+                  module_copy.push_back(line);
+
+              }
+        }
+
+
+        infile.close( ) ;
+
+
+    }
+
+}*/
+
+void MainWindow::recursive_module_searching (tree_item_module* current_module,tree_item_module* top_item_module,std::string wire_name){
+    tree_item_module* recursive_module_search = current_module;
+    QList<std::string> names_modules;
+    QList<std::string> types_modules;
+    names_modules << recursive_module_search->getName();
+    types_modules << recursive_module_search->getType();
+    std::string location = recursive_module_search->getLocation();
+    recursive_module_search = recursive_module_search->parentItem();
+
+    while(recursive_module_search != top_item_module->parentItem()){
+
+        std::string name_wire = "";
+        for (int l = 0; l < names_modules.size(); l++) {
+            name_wire = name_wire + names_modules[l] + "_";
+
+        }
+        name_wire = name_wire + wire_name;
+        name_wire = name_wire + "*";
+        for (int l = 0; l < names_modules.size()-1; l++) {
+            name_wire = name_wire + names_modules[l] + "_";
+
+        }
+        name_wire = name_wire + wire_name;
+        name_wire = name_wire + "*";
+        name_wire = name_wire + location;
+        name_wire = name_wire + "*";
+        name_wire = name_wire + types_modules.last();
+        name_wire = name_wire + ":";
+        name_wire = name_wire + names_modules.last();
+
+        recursive_module_search->appendWirePublic(name_wire);
+        location = recursive_module_search->getLocation();
+        names_modules << recursive_module_search->getName();
+        types_modules << recursive_module_search->getType();
+        recursive_module_search = recursive_module_search->parentItem();
+    }
+}
+
+
+//------------------------------------------------------------------------------------
+
+//! [quoting modelview_b]
+
+//! [quoting modelview_b]
+
+/*void MainWindow::buttonn(const QItemSelection & /*newSelection, const QItemSelection & /*oldSelection)
+{
+    //get the text of the selected item
+
+    const QModelIndex index_aux = treeView->selectionModel()->currentIndex();
+    //const QModelIndex index = global_index.child(index_aux.row(),0);
+    const QModelIndex index = index_aux.parent().child(index_aux.row(),0);
+    const QModelIndex indexaux = index_aux.parent().child(index_aux.row(),1);
+
+
+
+    QString row = QString::number(index.row());
+    QString column = QString::number(index.column());
+    const QModelIndex index2 = index.child(0,0);
+    qDebug("row "+row.toLatin1()+"column "+column.toLatin1());
+    //    QModelIndex index2 = new QModelIndex(index.row(),0);
+    QString selectedText = index.data(Qt::DisplayRole).toString();
+    //find out the hierarchy level of the selected item
+    int hierarchyLevel=1;
+    QModelIndex seekRoot = index;
+    while(seekRoot.parent() != QModelIndex())
+    {
+        seekRoot = seekRoot.parent();
+        hierarchyLevel++;
+    }
+    QString showString = QString("%1, Level %2").arg(selectedText)
+            .arg(hierarchyLevel);
+    setWindowTitle(showString);
+}*/
+
+QList<QStandardItem *> MainWindow::prepareRow(const QString &first,
+                                              const QString &second,
+                                              const QString &third,
+                                              const QString &ID)
+{
+    std::string subwire = "wiresub";
+    QList<QStandardItem *> rowItems;
+    QStandardItem *fir = new QStandardItem(first);
+    if(subwire.compare(first.toStdString())==0){
+        fir->setFlags(fir->flags()| Qt::ItemIsUserCheckable);
+        fir->setCheckState(Qt::Unchecked);
+    }
+    QStandardItem *sec = new QStandardItem(second);
+    QStandardItem *thir = new QStandardItem(third);
+    QStandardItem *forth = new QStandardItem(ID);
+    fir->setWhatsThis(ID);
+    sec->setWhatsThis(ID);
+    thir->setWhatsThis(ID);
+    forth->setWhatsThis(ID);
+    rowItems << fir;
+    rowItems << sec;
+    rowItems << thir;
+    rowItems << forth;
+    /*rowItems << a;
+    rowItems << new QStandardItem(second);
+    rowItems << new QStandardItem(third);
+    rowItems << new QStandardItem(ID);*/
+    return rowItems;
+}
+
+void MainWindow::setupModelData(const QStringList &lines, QStandardItem *parent)
+{
+    string name = "";
+    string type = "";
+    int size = 0;
+    int id = 0;
+    int idfather = 0;
+
+
+    QList<QStandardItem*> parents;
+    QList<int> indentations;
+    QList<int> fathers;
+
+    parents << parent;
+    fathers << 0;
+    indentations << 0;
+
+    int number = 0;
+    QString numero_l = QString::number(lines.count());
+    qDebug("aqui: "+numero_l.toLatin1()+"\n");
+    while (number < lines.count()) {
+        int position = 0;
+        while (position < lines[number].length()) {
+            if (lines[number].mid(position, 1) != " ")
+                break;
+            position++;
+        }
+
+        QString lineData = lines[number].mid(position);
+
+        if (!lineData.isEmpty()) {
+            // Read the column data from the rest of the line.
+            QStringList columnStrings = lineData.split("|", QString::SkipEmptyParts);
+            int tamanho = columnStrings.count();
+
+            if (position > indentations.last()) {
+                if(name!= string("wire")){
+                    fathers << id;
+                }else{
+                    fathers << fathers.last();
+                }
+
+
+                // The last child of the current parent is now the new parent
+                // unless the current parent has no children.
+                int child_count = parents.last()->rowCount();
+
+
+                if (child_count > 0) {
+                    /*QStandardItem auxx = parents.last()->child(child_count);
+                    parents << &auxx;*/
+                    parents << parents.last()->child(child_count-1);
+                    //std::cout << "aaaaaaa" << columnStrings[0].toStdString() << "\n";
+                    indentations << position;
+
+
+                }
+            } else {
+                while (position < indentations.last() && parents.count() > 0) {
+                    parents.pop_back();
+                    indentations.pop_back();
+                    //if(fathers.size() > 0){
+                    fathers.pop_back();
+                    //   }
+                }
+            }
+
+            // Append a new item to the current parent's list of children.
+            QList<QStandardItem *> thirdRow ;
+            std::string aaaa;
+            std::string str1 = columnStrings[0].toStdString();//("green apple");
+            std::string str2 ("wiresub");
+
+            if(tamanho==2){
+                treeitem* item;
+                if(id == 0){
+                    item = new treeitem(id, columnStrings[0].toStdString(), columnStrings[1].toStdString(),columnStrings[3].toStdString(),columnStrings[2].toInt(),-1);
+                }
+                else{
+                    item = new treeitem(id, columnStrings[0].toStdString(), columnStrings[1].toStdString(),columnStrings[3].toStdString(),columnStrings[2].toInt(),fathers.last());
+                }
+                items_tree << item;
+                thirdRow =prepareRow(columnStrings[0], columnStrings[1], "","");
+
+            }
+            else{
+                treeitem* item;
+                if(id == 0){
+                    item = new treeitem(id, columnStrings[0].toStdString(), columnStrings[1].toStdString(),columnStrings[3].toStdString(),columnStrings[2].toInt(),-1);
+                }
+                else{
+                    item = new treeitem(id, columnStrings[0].toStdString(), columnStrings[1].toStdString(),columnStrings[3].toStdString(),columnStrings[2].toInt(),fathers.last());
+                }
+                items_tree << item;
+                thirdRow =prepareRow(columnStrings[0], columnStrings[1], columnStrings[2],QString::number(id));
+                //std::cout << "What is this?" << item->getfather() << "\n";
+
+            }
+
+            /*if (str1.compare(str2) == 0){
+                thirdRow.at(0)->setFlags(thirdRow.at(0)->flags()| Qt::ItemIsUserCheckable);
+                thirdRow.at(0)->setCheckState(Qt::Unchecked);
+            }
+            thirdRow.at(0)->setFlags(thirdRow.at(0)->flags()| Qt::ItemIsUserCheckable);
+            thirdRow.at(0)->setCheckState(Qt::Unchecked);*/
+
+            // adding a row to an item starts a subtree
+            //item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            //item->setCheckState(Qt::Unchecked);
+            thirdRow[0]->setAccessibleDescription(columnStrings[3]);
+            thirdRow[1]->setAccessibleDescription(columnStrings[3]);
+            thirdRow[2]->setAccessibleDescription(columnStrings[3]);
+            thirdRow[3]->setAccessibleDescription(columnStrings[3]);
+            parents.last()->appendRow(thirdRow);
+            if (str1.compare(str2) == 0){
+                int child_count = parents.last()->rowCount();
+                parents << parents.last()->child(child_count-1);
+                thirdRow =prepareRow(columnStrings[0], columnStrings[1], columnStrings[2],QString::number(id));
+                thirdRow.at(0)->setFlags(thirdRow.at(0)->flags()| Qt::ItemIsUserCheckable);
+                thirdRow.at(0)->setCheckState(Qt::Unchecked);
+                thirdRow[0]->setAccessibleDescription(columnStrings[3]);
+                thirdRow[1]->setAccessibleDescription(columnStrings[3]);
+                thirdRow[2]->setAccessibleDescription(columnStrings[3]);
+                thirdRow[3]->setAccessibleDescription(columnStrings[3]);
+                parents.last()->appendRow(thirdRow);
+                parents.pop_back();
+            }
+            /*if(columnStrings[0] != QString("wire")){
+                fathers <
+            }*/
+            /*if(columnStrings[0] != QString("wire")){
+            idfather = id;
+            }*/
+
+            id++;
+            name = columnStrings[0].toStdString();
+            //std::cout << "aaaaaaa" << columnStrings[0].toStdString() << "\n";
+            /*if(columnStrings[0] != QString("wire")){
+           fathers << idfather;
+           idfather = id;
+           }*/
+
+            //parents.last()->appendChild(new TreeItem(columnData, parents.last()));
+
+        }
+
+        ++number;
+    }
+}

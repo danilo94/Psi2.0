@@ -1,0 +1,3 @@
+yosys-config --exec --cxx --cxxflags --ldflags -o $HOME/bin/hierarchy_cmd.so -shared hierarchy_cmd.cc --ldlibs
+yosys-config --exec --cxx --cxxflags --ldflags -o $HOME/hierarchy_cmd.so -shared hierarchy_cmd.cc --ldlibs
+yosys -Ql test0.log_new -m $HOME/bin/hierarchy_cmd.so -p 'my_cmd foo bar' MIPS32.v 

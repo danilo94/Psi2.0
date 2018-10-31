@@ -1,0 +1,410 @@
+
+-- Parsing `/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v' using frontend `verilog' --
+
+1. Executing Verilog-2005 frontend.
+Parsing Verilog input from `/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v' to AST representation.
+Generating RTLIL representation for module `\dCalcVectorLength3'.
+Generating RTLIL representation for module `\add3'.
+Generating RTLIL representation for module `\dCalcPointsDistance3'.
+Generating RTLIL representation for module `\Spheres_Collision_Test'.
+Successfully finished Verilog frontend.
+
+-- Running pass `my_cmd foo bar' --
+Arguments to my_cmd:
+  my_cmd
+  foo
+  bar
+Modules in current design:
+dCalcVectorLength3 (36 wires, 7 cells)
+   name=clk width=1
+   name=rst width=1
+   name=a1 width=32
+   name=a2 width=32
+   name=a3 width=32
+   name=b1 width=32
+   name=b2 width=32
+   name=b3 width=32
+   name=res width=32
+   name=out_rdy width=1
+   name=out_mult1 width=32
+   name=done_mult1 width=1
+   name=out_mult2 width=32
+   name=done_mult2 width=1
+   name=out_mult3 width=32
+   name=done_mult3 width=1
+   name=resultadd3 width=32
+   name=rst_add3 width=1
+   name=done_add3 width=1
+   name=resetsqrt width=1
+   name=iddle width=1
+   name=rootcalc width=32
+   name=out_rdy_sqrt width=1
+   name=done_mult width=1
+   name=rst_mult width=1
+   name=rst_sqrt width=1
+   name=done_sqrt width=1
+   name=fsm_length width=6
+RTL source for cell $logic_and$dCalcVectorLength3.v:34$1 is at dCalcVectorLength3.v:34.
+RTL source for cell $logic_and$dCalcVectorLength3.v:34$2 is at dCalcVectorLength3.v:34.
+RTL source for cell \mult1 is at dCalcVectorLength3.v:38.
+RTL source for cell \mult2 is at dCalcVectorLength3.v:48.
+RTL source for cell \mult3 is at dCalcVectorLength3.v:58.
+RTL source for cell \adder is at dCalcVectorLength3.v:68.
+    Cell: name=\adder,type=\add3 
+	add3 (19 wires, 2 cells)
+	   name=clk width=1
+	   name=rst width=1
+	   name=a1 width=32
+	   name=a2 width=32
+	   name=a3 width=32
+	   name=out_rdy width=1
+	   name=result width=32
+		   name=rst_add1 width=1
+	   name=rst_add2 width=1
+	   name=done_add1 width=1
+	   name=done_add2 width=1
+	   name=out_add1 width=32
+	   name=out_add2 width=32
+	   name=fsm_add width=6
+				RTL source for cell \add1 is at add3.v:21.
+RTL source for cell \add2 is at add3.v:31.
+RTL source for cell \sqrt is at dCalcVectorLength3.v:82.
+
+
+
+add3 (19 wires, 2 cells)
+   name=clk width=1
+   name=rst width=1
+   name=a1 width=32
+   name=a2 width=32
+   name=a3 width=32
+   name=out_rdy width=1
+   name=result width=32
+   name=rst_add1 width=1
+   name=rst_add2 width=1
+   name=done_add1 width=1
+   name=done_add2 width=1
+   name=out_add1 width=32
+   name=out_add2 width=32
+   name=fsm_add width=6
+RTL source for cell \add1 is at add3.v:21.
+RTL source for cell \add2 is at add3.v:31.
+
+
+
+dCalcPointsDistance3 (36 wires, 9 cells)
+   name=clk width=1
+   name=rst width=1
+   name=a1 width=32
+   name=a2 width=32
+   name=a3 width=32
+   name=b1 width=32
+   name=b2 width=32
+   name=b3 width=32
+   name=res width=32
+   name=out_rdy width=1
+   name=done_add3 width=1
+   name=done_add1 width=1
+   name=done_add2 width=1
+   name=out_add1 width=32
+   name=out_add2 width=32
+   name=CLK2 width=1
+   name=b1_neg width=32
+   name=b2_neg width=32
+   name=b3_neg width=32
+   name=out_add3 width=32
+   name=done_calclen width=1
+   name=done_add width=1
+   name=rst_add width=1
+   name=rst_len width=1
+   name=res_len width=32
+   name=fsm_distance width=6
+RTL source for cell \add3 is at DistanceCalc.v:68.
+RTL source for cell \add1 is at DistanceCalc.v:48.
+RTL source for cell \add2 is at DistanceCalc.v:58.
+RTL source for cell $not$DistanceCalc.v:33$5 is at DistanceCalc.v:33.
+RTL source for cell $not$DistanceCalc.v:34$6 is at DistanceCalc.v:34.
+RTL source for cell $not$DistanceCalc.v:35$7 is at DistanceCalc.v:35.
+RTL source for cell $logic_and$DistanceCalc.v:38$8 is at DistanceCalc.v:38.
+RTL source for cell $logic_and$DistanceCalc.v:38$9 is at DistanceCalc.v:38.
+RTL source for cell \calcLen is at DistanceCalc.v:81.
+    Cell: name=\calcLen,type=\dCalcVectorLength3 
+	dCalcVectorLength3 (36 wires, 7 cells)
+	   name=clk width=1
+	   name=rst width=1
+	   name=a1 width=32
+	   name=a2 width=32
+	   name=a3 width=32
+	   name=b1 width=32
+	   name=b2 width=32
+	   name=b3 width=32
+	   name=res width=32
+	   name=out_rdy width=1
+	   name=out_mult1 width=32
+	   name=done_mult1 width=1
+	   name=out_mult2 width=32
+	   name=done_mult2 width=1
+	   name=out_mult3 width=32
+	   name=done_mult3 width=1
+	   name=resultadd3 width=32
+	   name=rst_add3 width=1
+	   name=done_add3 width=1
+	   name=resetsqrt width=1
+	   name=iddle width=1
+	   name=rootcalc width=32
+	   name=out_rdy_sqrt width=1
+	   name=done_mult width=1
+	   name=rst_mult width=1
+	   name=rst_sqrt width=1
+	   name=done_sqrt width=1
+	   name=fsm_length width=6
+								RTL source for cell $logic_and$dCalcVectorLength3.v:34$1 is at dCalcVectorLength3.v:34.
+RTL source for cell $logic_and$dCalcVectorLength3.v:34$2 is at dCalcVectorLength3.v:34.
+RTL source for cell \mult1 is at dCalcVectorLength3.v:38.
+RTL source for cell \mult2 is at dCalcVectorLength3.v:48.
+RTL source for cell \mult3 is at dCalcVectorLength3.v:58.
+RTL source for cell \adder is at dCalcVectorLength3.v:68.
+        Cell: name=\adder,type=\add3 
+		add3 (19 wires, 2 cells)
+		   name=clk width=1
+		   name=rst width=1
+		   name=a1 width=32
+		   name=a2 width=32
+		   name=a3 width=32
+		   name=out_rdy width=1
+		   name=result width=32
+				   name=rst_add1 width=1
+		   name=rst_add2 width=1
+		   name=done_add1 width=1
+		   name=done_add2 width=1
+		   name=out_add1 width=32
+		   name=out_add2 width=32
+		   name=fsm_add width=6
+								RTL source for cell \add1 is at add3.v:21.
+RTL source for cell \add2 is at add3.v:31.
+RTL source for cell \sqrt is at dCalcVectorLength3.v:82.
+
+
+
+Spheres_Collision_Test (119 wires, 45 cells)
+   name=clk width=1
+   name=rst width=1
+   name=done width=1
+   name=start width=1
+   name=x1 width=32
+   name=y1 width=32
+   name=z1 width=32
+   name=r1 width=32
+   name=x2 width=32
+   name=y2 width=32
+   name=z2 width=32
+   name=r2 width=32
+   name=cx width=32
+   name=cy width=32
+   name=cz width=32
+   name=normalx width=32
+   name=normaly width=32
+   name=normalz width=32
+   name=depth width=1
+   name=ret width=1
+   name=rst_Phase_1 width=1
+   name=done_Phase1 width=1
+   name=d width=32
+   name=done_Calc_Dist width=1
+   name=radius_sum width=32
+   name=done_Radius_Sum width=1
+   name=x2_neg width=32
+   name=y2_neg width=32
+   name=z2_neg width=32
+   name=r1_neg width=32
+   name=d_neg width=32
+   name=done_X_Sum width=1
+   name=xsum width=32
+   name=done_Y_Sum width=1
+   name=ysum width=32
+   name=done_Z_Sum width=1
+   name=zsum width=32
+   name=done_R_Sum width=1
+   name=rsum width=32
+   name=rst_Phase_2 width=1
+   name=done_Phase2 width=1
+   name=done_dRecip width=1
+   name=d_recip width=32
+   name=radius_sum_neg width=32
+   name=diff_res width=32
+   name=done_diff width=1
+   name=done_dep width=1
+   name=dep width=32
+   name=done_drsum width=1
+   name=drsum width=32
+   name=rst_Phase_3 width=1
+   name=done_Phase3 width=1
+   name=done_nx width=1
+   name=nx width=32
+   name=done_ny width=1
+   name=ny width=32
+   name=done_nz width=1
+   name=nz width=32
+   name=done_k width=1
+   name=k width=32
+   name=rst_Phase_4 width=1
+   name=done_Phase4 width=1
+   name=done_nxk width=1
+   name=nxk width=32
+   name=done_nyk width=1
+   name=nyk width=32
+   name=done_nzk width=1
+   name=nzk width=32
+   name=rst_Phase_5 width=1
+   name=done_Phase5 width=1
+   name=done_posx width=1
+   name=posx width=32
+   name=done_posy width=1
+   name=posy width=32
+   name=done_posz width=1
+   name=posz width=32
+   name=collision_type width=4
+   name=fsm_execute_phases width=6
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:99$11 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:99.
+RTL source for cell \dCalcPointsDist0 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:70.
+    Cell: name=\dCalcPointsDist0,type=\dCalcPointsDistance3 
+	dCalcPointsDistance3 (36 wires, 9 cells)
+	   name=clk width=1
+	   name=rst width=1
+	   name=a1 width=32
+	   name=a2 width=32
+	   name=a3 width=32
+	   name=b1 width=32
+	   name=b2 width=32
+	   name=b3 width=32
+	   name=res width=32
+	   name=out_rdy width=1
+	   name=done_add3 width=1
+			   name=done_add1 width=1
+	   name=done_add2 width=1
+	   name=out_add1 width=32
+	   name=out_add2 width=32
+	   name=CLK2 width=1
+	   name=b1_neg width=32
+	   name=b2_neg width=32
+	   name=b3_neg width=32
+	   name=out_add3 width=32
+	   name=done_calclen width=1
+	   name=done_add width=1
+	   name=rst_add width=1
+	   name=rst_len width=1
+	   name=res_len width=32
+	   name=fsm_distance width=6
+								RTL source for cell \add3 is at DistanceCalc.v:68.
+RTL source for cell \add1 is at DistanceCalc.v:48.
+RTL source for cell \add2 is at DistanceCalc.v:58.
+RTL source for cell $not$DistanceCalc.v:33$5 is at DistanceCalc.v:33.
+RTL source for cell $not$DistanceCalc.v:34$6 is at DistanceCalc.v:34.
+RTL source for cell $not$DistanceCalc.v:35$7 is at DistanceCalc.v:35.
+RTL source for cell $logic_and$DistanceCalc.v:38$8 is at DistanceCalc.v:38.
+RTL source for cell $logic_and$DistanceCalc.v:38$9 is at DistanceCalc.v:38.
+RTL source for cell \calcLen is at DistanceCalc.v:81.
+        Cell: name=\calcLen,type=\dCalcVectorLength3 
+		dCalcVectorLength3 (36 wires, 7 cells)
+		   name=clk width=1
+		   name=rst width=1
+		   name=a1 width=32
+		   name=a2 width=32
+		   name=a3 width=32
+		   name=b1 width=32
+		   name=b2 width=32
+		   name=b3 width=32
+		   name=res width=32
+		   name=out_rdy width=1
+		   name=out_mult1 width=32
+		   name=done_mult1 width=1
+		   name=out_mult2 width=32
+		   name=done_mult2 width=1
+		   name=out_mult3 width=32
+		   name=done_mult3 width=1
+		   name=resultadd3 width=32
+		   name=rst_add3 width=1
+		   name=done_add3 width=1
+		   name=resetsqrt width=1
+		   name=iddle width=1
+		   name=rootcalc width=32
+		   name=out_rdy_sqrt width=1
+		   name=done_mult width=1
+		   name=rst_mult width=1
+		   name=rst_sqrt width=1
+		   name=done_sqrt width=1
+		   name=fsm_length width=6
+																RTL source for cell $logic_and$dCalcVectorLength3.v:34$1 is at dCalcVectorLength3.v:34.
+RTL source for cell $logic_and$dCalcVectorLength3.v:34$2 is at dCalcVectorLength3.v:34.
+RTL source for cell \mult1 is at dCalcVectorLength3.v:38.
+RTL source for cell \mult2 is at dCalcVectorLength3.v:48.
+RTL source for cell \mult3 is at dCalcVectorLength3.v:58.
+RTL source for cell \adder is at dCalcVectorLength3.v:68.
+            Cell: name=\adder,type=\add3 
+			add3 (19 wires, 2 cells)
+			   name=clk width=1
+			   name=rst width=1
+			   name=a1 width=32
+			   name=a2 width=32
+			   name=a3 width=32
+			   name=out_rdy width=1
+			   name=result width=32
+						   name=rst_add1 width=1
+			   name=rst_add2 width=1
+			   name=done_add1 width=1
+			   name=done_add2 width=1
+			   name=out_add1 width=32
+			   name=out_add2 width=32
+			   name=fsm_add width=6
+												RTL source for cell \add1 is at add3.v:21.
+RTL source for cell \add2 is at add3.v:31.
+RTL source for cell \sqrt is at dCalcVectorLength3.v:82.
+RTL source for cell \add0 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:87.
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:103$12 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:103.
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:107$13 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:107.
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:111$14 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:111.
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:115$15 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:115.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173$16 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173.
+RTL source for cell \add_x1_x2neg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:122.
+RTL source for cell \add_y1_y2neg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:136.
+RTL source for cell \add_z1_z2neg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:150.
+RTL source for cell \add_r2_r1neg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:163.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173$17 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173$18 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173$19 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173$20 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:173.
+RTL source for cell $not$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:197$21 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:197.
+RTL source for cell \divide_1_d is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:186.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241$22 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241.
+RTL source for cell \addDiff is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:203.
+RTL source for cell \add_radius_sum_dneg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:217.
+RTL source for cell \add_rsum_dneg is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:231.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241$23 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241$24 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:241.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306$25 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306.
+RTL source for cell \multiply_xsum_dRecip is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:254.
+RTL source for cell \multiply_ysum_dRecip is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:268.
+RTL source for cell \multiply_zsum_dRecip is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:282.
+RTL source for cell \divide_drsum_2 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:296.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306$26 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306$27 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:306.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:358$28 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:358.
+RTL source for cell \multiply_nx_k is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:320.
+RTL source for cell \multiply_ny_k is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:334.
+RTL source for cell \multiply_nz_k is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:348.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:358$29 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:358.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:409$30 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:409.
+RTL source for cell \add_x1_nxk is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:371.
+RTL source for cell \add_y1_nyk is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:385.
+RTL source for cell \add_z1_nzk is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:399.
+RTL source for cell $logic_and$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:409$31 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:409.
+RTL source for cell $eq$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:484$33 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:484.
+RTL source for cell $eq$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498$34 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498.
+RTL source for cell $eq$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498$35 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498.
+RTL source for cell $logic_or$/home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498$36 is at /home/lunk/Documents/PackPsi/yosys_collision_pass/Spheres_Collision_Test.v:498.
+
+
+
+End of script. Logfile hash: 0a32ad20ef, CPU: user 0.03s system 0.01s
+Yosys 0.4 (git sha1 UNKNOWN, gcc 5.4.0-6ubuntu1~16.04.9 -fPIC -Os)
+Time spent: 72% 1x read_verilog (0 sec), 27% 1x my_cmd (0 sec)

@@ -1,0 +1,53 @@
+
+-- Parsing `/home/danilo/Downloads/natalius_8bit_risc/trunk/processor_core/natalius_processor.v' using frontend `verilog' --
+
+1. Executing Verilog-2005 frontend.
+Parsing Verilog input from `/home/danilo/Downloads/natalius_8bit_risc/trunk/processor_core/natalius_processor.v' to AST representation.
+Generating RTLIL representation for module `\natalius_processor'.
+Successfully finished Verilog frontend.
+
+-- Running pass `my_cmd foo bar' --
+Arguments to my_cmd:
+  my_cmd
+  foo
+  bar
+Modules in current design:
+natalius_processor (29 wires, 3 cells)
+   name=clk width=1
+   name=rst width=1
+   name=port_addr width=8
+   name=read_e width=1
+   name=write_e width=1
+   name=data_in width=8
+   name=data_out width=8
+   name=z width=1
+   name=c width=1
+   name=insel width=1
+   name=we width=1
+   name=raa width=3
+   name=rab width=3
+   name=wa width=3
+   name=opalu width=3
+   name=sh width=3
+   name=selpc width=1
+   name=ldpc width=1
+   name=ldflag width=1
+   name=ninst_addr width=11
+   name=selk width=1
+   name=KTE width=8
+   name=stack_addr width=11
+   name=wr_en width=1
+   name=rd_en width=1
+   name=imm width=8
+   name=selimm width=1
+   name=instruction width=16
+   name=inst_addr width=11
+RTL source for cell \control_unit_i is at /home/danilo/Downloads/natalius_8bit_risc/trunk/processor_core/natalius_processor.v:52.
+RTL source for cell \data_path_i is at /home/danilo/Downloads/natalius_8bit_risc/trunk/processor_core/natalius_processor.v:53.
+RTL source for cell \inst_mem is at /home/danilo/Downloads/natalius_8bit_risc/trunk/processor_core/natalius_processor.v:54.
+
+
+
+End of script. Logfile hash: a4c563820a, CPU: user 0.00s system 0.00s
+Yosys 0.4 (git sha1 UNKNOWN, clang 5.0.2 -fPIC -Os)
+Time spent: 61% 1x read_verilog (0 sec), 38% 1x my_cmd (0 sec)
