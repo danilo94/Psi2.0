@@ -51,6 +51,13 @@ Finally after compile, you will run the following comand to install yosys in you
 make install
 ```
 
+After install yosys, you need to compile Psi1.0 tool, you can do it using 
+
+```
+make
+```
+on /Psi1.0/build folder.
+
 
 ## Deployment
 
